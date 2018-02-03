@@ -128,10 +128,10 @@ def investment_list(request):
    return render(request, 'portfolio/investment_list.html', {'investments': investments})
 
 @login_required
-def investment_edit(request):
+def investment_edit(request,pk):
     investment= get_object_or_404(Investment, pk=pk)
     if request.method == "POST":
-        form = InvestmentForm(request.POST, instance=stock)
+        form = InvestmentForm(request.POST, instance=investment)
         if form.is_valid():
             investment = form.save()
             # stock.customer = stock.id
@@ -141,7 +141,7 @@ def investment_edit(request):
             return render(request, 'portfolio/investment_list.html', {'investments': investment})
     else:
         # print("else")
-        form = StockForm(instance=stock)
+        form = InvestmentForm(instance=investment)
     return render(request, 'portfolio/investment_edit.html', {'form': form})
 
 

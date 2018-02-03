@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-#import dj_database_url
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -101,15 +101,21 @@ except ImportError:
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-#db_from_env = dj_database_url.config(conn_max_age=500)
-#DATABASES = { 'default': dj_database_url.config() }
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES = { 'default': dj_database_url.config() }
+
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'd2h00iel1a8htn',
+        'USER': 'frkxvylrciypoz',
+        'PASSWORD': '58c3aabf8f6c30abadde45b6b06cd7fae91f9e57316f139764ace691332dc0ae',
+        'HOST': 'ec2-23-21-195-249.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
+
 
 
 
