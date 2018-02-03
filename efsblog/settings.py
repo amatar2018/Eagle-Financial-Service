@@ -109,22 +109,16 @@ DATABASES = { 'default': dj_database_url.config() }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ddffoibanlvql3',
-        'USER': 'ttgmluecvhpbrc',
-        'PASSWORD': '7a0ab09364965f3139e8b859fcfa32b381efb3327960ea188ff9e9e16c0ce111',
-        'HOST': 'ec2-54-204-43-7.compute-1.amazonaws.com',
+        'NAME': 'd2h00iel1a8htn',
+        'USER': 'frkxvylrciypoz',
+        'PASSWORD': '58c3aabf8f6c30abadde45b6b06cd7fae91f9e57316f139764ace691332dc0ae',
+        'HOST': 'ec2-23-21-195-249.compute-1.amazonaws.com',
         'PORT': '5432',
     }
 }
 
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 
 # Password validation
