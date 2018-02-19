@@ -39,6 +39,7 @@
                 <th>Shares</th>
                 <th>Purchase Price</th>
                 <th>Purchase Date</th>
+                <th>Current Price</th>
                 <th colspan="3">Actions</th>
             </tr>
             </thead>
@@ -51,6 +52,7 @@
                     <td>{{ stock.shares }}</td>
                     <td>{{ stock.purchase_price }}</td>
                     <td>{{ stock.purchase_date }}</td>
+                    <td>stock </td>
                     <td><a href="{% url 'portfolio:stock_edit' pk=stock.pk %}"
                            class="btn btn-warning">Edit</a></td>
                     <td><a href="{% url 'portfolio:stock_delete' pk=stock.pk %}"

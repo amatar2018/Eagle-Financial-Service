@@ -6,6 +6,60 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from .forms import *
 
+from django.db.models import Sum
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import CustomerSerializer
+
+
+@login_required
+def mutualfund_list(request):
+    stocks = MutualFund.objects.filter(purchase_date__lte=timezone.now())
+    return render(request, 'portfolio/mutualfund_list.html', {'stocks': stocks})
+
+
+@login_required
+def mutualfund_new(request):
+    if request.method == "POST":
+        form = MutualFundForm(request.POST)
+        if form.is_valid():
+            stock = form.save(commit=False)
+            stock.created_date = timezone.now()
+            stock.save()
+            stocks = MutualFund.objects.filter(purchase_date__lte=timezone.now())
+            return render(request, 'portfolio/mutualfund_list.html',
+                          {'stocks': stocks})
+    else:
+        form = MutualFundForm()
+        # print("Else")
+    return render(request, 'portfolio/mutualfund_new.html', {'form': form})
+
+
+@login_required
+def mutualfund_edit(request, pk):
+    stock = get_object_or_404(Stock, pk=pk)
+    if request.method == "POST":
+        form = MutualFundForm(request.POST, instance=stock)
+        if form.is_valid():
+            stock = form.save()
+            # stock.customer = stock.id
+            stock.updated_date = timezone.now()
+            stock.save()
+            stocks = MutualFund.objects.filter(purchase_date__lte=timezone.now())
+            return render(request, 'portfolio/mutualfund_list.html', {'stocks': stocks})
+    else:
+        # print("else")
+        form = StockForm(instance=stock)
+    return render(request, 'portfolio/mutualfund_edit.html', {'form': form})
+
+
+@login_required
+def mutualfund_delete(request, pk):
+    stock = get_object_or_404(Stock, pk=pk)
+    stock.delete()
+    stocks = MutualFund.objects.filter(purchase_date__lte=timezone.now())
+    return render(request, 'portfolio/mutualfund_list.html', {'stocks': stocks})
 
 
 def home(request):
@@ -115,9 +169,9 @@ def investment_new(request):
            return render(request, 'portfolio/investment_list.html',
                          {'investments': investments})
    else:
-       form = StockForm()
+       form = InvestmentForm()
        # print("Else")
-   return render(request, 'portfolio/stock_new.html', {'form': form})
+   return render(request, 'portfolio/investment_new.html', {'form': form})
 
 
 
@@ -152,8 +206,44 @@ def portfolio(request,pk):
    investments =Investment.objects.filter(customer=pk)
    stocks = Stock.objects.filter(customer=pk)
    sum_acquired_value = Investment.objects.filter(customer=pk).aggregate(Sum('acquired_value'))
+   sum_recent_value = Investment.objects.filter(customer=pk).aggregate(Sum('recent_value'))
+   sum_current_stocks_value = 0
+   sum_of_initial_stock_value = 0
+   sum_of_initial_investment=0
+   sum_of_recent_investment=0
+
+   for stock in stocks:
+       stock.current_price=Stock.current_stock_value(stock)
+
+   for investment in investments:
+       sum_of_initial_investment+=investment.acquired_value
+       sum_of_recent_investment+=investment.recent_value
+   for stock in stocks:
+        current_stock_price = Stock.current_stock_price(stock)
+        current_stock_value = Stock.current_stock_value(stock)
+        sum_current_stocks_value += stock.current_stock_value()
+        sum_of_initial_stock_value += stock.initial_stock_value()
 
 
-   return render(request, 'portfolio/portfolio.html', {'customers': customers, 'investments': investments,
-                                                      'stocks': stocks,
-                                                      'sum_acquired_value': sum_acquired_value,})
+
+        return render(request, 'portfolio/portfolio.html', {'customers': customers, 'investments': investments,
+                                                        'stocks': stocks,
+                                                        'sum_of_initial_investment':sum_of_initial_investment,
+                                                         'sum_of_recent_investment':sum_of_recent_investment,
+                                                        'current_stock_price':current_stock_price,
+                                                        'current_stock_value': current_stock_value,
+                                                        'sum_acquired_value': sum_acquired_value,
+                                                        'sum_recent_value': sum_recent_value,
+                                                        'sum_current_stocks_value': sum_current_stocks_value,
+                                                        'sum_of_initial_stock_value': sum_of_initial_stock_value})
+
+
+
+
+class CustomerList(APIView):
+
+    def get(self,request):
+        customers_json = Customer.objects.all()
+        serializer = CustomerSerializer(customers_json, many=True)
+        return Response(serializer.data)
+
